@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Flipbook avancé</title>
+
+  <script src="https://unpkg.com/page-flip/dist/js/page-flip.browser.js"></script>
+
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 0;
+      background: #f0f0f0;
+      font-family: Arial;
+    }
+
+    #container {
+      position: relative;
+    }
+
+    #book {
+      width: 600px;
+      height: 800px;
+      margin-top: 20px;
+      transform-origin: center center;
+    }
+
+    .controls {
+      margin-top: 10px;
+    }
+
+    button {
+      padding: 10px 15px;
+      margin: 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    #pageNum {
+      margin-top: 5px;
+      font-size: 14px;
+    }
+
+    .zone {
+      position: absolute;
+      top: 0;
+      width: 50%;
+      height: 100%;
+      z-index: 10;
+    }
+
+    .left { left: 0; }
+    .right { right: 0; }
+  </style>
+</head>
+
+<body>
+
+<div id="container">
+  <div id="book"></div>
+
+  <!-- zones clic -->
+  <div class="zone left" onclick="prevPage()"></div>
+  <div class="zone right" onclick="nextPage()"></div>
+</div>
+
+<div class="controls">
+  <button onclick="prevPage()">⬅️</button>
+  <button onclick="nextPage()">➡️</button>
+  <button onclick="zoomIn()">🔍 +</button>
+  <button onclick="zoomOut()">🔍 -</button>
+  <button onclick="toggleFullscreen()">⛶ Plein écran</button>
+</div>
+
+<div id="pageNum">Page 1</div>
+
+<script>
+  let pageFlip;
+  let zoom = 1;
+
+  window.onload = function () {
+
+    pageFlip = new St.PageFlip(
+      document.getElementById("book"),
+      {
+        width: 600,
+        height: 800,
+        showCover: true
+      }
+    );
+
+    pageFlip.loadFromImages([
+      "Le K - Test - 16-01.jpg",
+      "Le K - Test - 16-02.jpg",
+      "Le K - Test - 16-03.jpg",
+      "Le K - Test - 16-04.jpg",
+      "Le K - Test - 16-05.jpg",
+      "Le K - Test - 16-06.jpg",
+      "Le K - Test - 16-07.jpg",
+      "Le K - Test - 16-08.jpg",
+      "Le K - Test - 16-09.jpg",
+      "Le K - Test - 16-10.jpg",
+      "Le K - Test - 16-11.jpg",
+      "Le K - Test - 16-12.jpg"
+    ]);
+
+    // mise à jour numéro de page
+    pageFlip.on("flip", (e) => {
+      document.getElementById("pageNum").innerText =
+        "Page " + (e.data + 1);
+    });
+
+    // zoom avec molette
+    document.addEventListener("wheel", function(e) {
+      if (e.deltaY < 0) {
+        zoomIn();
+      } else {
+        zoomOut();
+      }
+    });
+  };
+
+  function nextPage() {
+    pageFlip.flipNext();
+  }
+
+  function prevPage() {
+    pageFlip.flipPrev();
+  }
+
+  function zoomIn() {
+    zoom += 0.1;
+    document.getElementById("book").style.transform = "scale(" + zoom + ")";
+  }
+
+  function zoomOut() {
+    zoom -= 0.1;
+    if (zoom < 0.5) zoom = 0.5;
+    document.getElementById("book").style.transform = "scale(" + zoom + ")";
+  }
+
+  function toggleFullscreen() {
+    let elem = document.documentElement;
+
+    if (!document.fullscreenElement) {
+      elem.requestFullscreen();
+    } else {
+      document.exitFullscreen();
+    }
+  }
+</script>
+
+</body>
+</html>
